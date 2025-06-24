@@ -1,0 +1,178 @@
+#!/usr/bin/python3
+
+from flask import Flask, request, jsonify, render_template, redirect, url_for
+from flask_sqlalchemy import SQLAlchemy
+
+app = Flask(__name__)
+
+# Server Address and Port
+address = "192.168.50.14"
+port = 443
+
+# Configure SQLite database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# Define the User model
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(50), unique=True, nullable=False)
+    password = db.Column(db.String(50), nullable=False)
+
+# Create the database and table
+with app.app_context():
+    db.create_all()
+
+# Route for the login page
+@app.route('/')
+def home():
+    return render_template('login.html')
+
+@app.route('/employees')
+def employee_page():
+    return render_template("employee.html")
+    
+#Route of the landing page
+@app.route('/landing')
+def landing_page():
+    return render_template("landing.html")
+
+#Route to the launch code page
+@app.route('/launchcodes')
+def launch_page():
+    return render_template("launchcodes.html")
+
+@app.route('/bank')
+def bank_page():
+    return render_template("bank.html")
+
+# Route for the registration page
+@app.route('/register')
+def register_page():
+    return render_template('register.html')
+
+# Route for the registration page
+@app.route('/robots.txt')
+def robots_txt():
+    return render_template('robots.txt')
+
+# Route to handle registration form submission
+@app.route('/register', methods=['POST'])
+def register():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    # Check if the username already exists
+    if User.query.filter_by(username=username).first():
+        return jsonify({'message': 'Username already exists!'}), 400
+
+    # Add the new user to the database
+    new_user = User(username=username, password=password)
+    db.session.add(new_user)
+    db.session.commit()
+
+    return jsonify({'redirect_url': url_for('home')}), 200
+
+# Route to handle login form submission
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    username = data.get('username')
+    password = data.get('password')
+
+    # Check credentials
+    user = User.query.filter_by(username=username, password=password).first()
+    if user:
+        return jsonify({'redirect_url': url_for('landing_page')}), 200
+    return jsonify({'message': 'Invalid username or password!'}), 401
+
+if __name__ == '__main__':
+    app.run(debug=True, host="192.168.50.14", port=80)
+    
+
+# a file called "1" with this:
+
+# from flask import Flask, request, jsonify, render_template, redirect, url_for
+# from flask_sqlalchemy import SQLAlchemy
+
+# app = Flask(__name__)
+
+# # Server Port
+# address = "192.168.50.14"
+# port = 443
+
+# # Configure SQLite database
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# db = SQLAlchemy(app)
+
+# # Define the User model
+# class User(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     username = db.Column(db.String(50), unique=True, nullable=False)
+#     password = db.Column(db.String(50), nullable=False)
+
+# # Create the database and table
+# with app.app_context():
+#     db.create_all()
+
+# # Route for the login page
+# @app.route('/')
+# def home():
+#     return render_template('login.html')
+
+# #Route of the landing page
+# @app.route('/landing')
+# def landing_page():
+#     return render_template("landing.html")
+
+# #Route to the launch code page
+# @app.route('/launchcodes')
+# def launch_page():
+#     return render_template("launchcodes.html")
+
+# @app.route('/bank')
+# def bank_page():
+#     return render_template("bank.html")
+
+# # Route for the registration page
+# @app.route('/register')
+# def register_page():
+#     return render_template('register.html')
+
+# # Route to handle registration form submission
+# @app.route('/register', methods=['POST'])
+# def register():
+#     data = request.json
+#     username = data.get('username')
+#     password = data.get('password')
+
+#     # Check if the username already exists
+#     if User.query.filter_by(username=username).first():
+#         return jsonify({'message': 'Username already exists!'}), 400
+
+#     # Add the new user to the database
+#     new_user = User(username=username, password=password)
+#     db.session.add(new_user)
+#     db.session.commit()
+
+#     return jsonify({'redirect_url': url_for('home')}), 200
+
+# # Route to handle login form submission
+# @app.route('/login', methods=['POST'])
+# def login():
+#     data = request.json
+#     username = data.get('username')
+#     password = data.get('password')
+
+#     # Check credentials
+#     user = User.query.filter_by(username=username, password=password).first()
+#     if user:
+#         return jsonify({'redirect_url': url_for('landing_page')}), 200
+#     return jsonify({'message': 'Invalid username or password!'}), 401
+
+# if __name__ == '__main__':
+#     app.run(debug=True, port=port)
+

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - RCGP{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center">Welcome to Your Dashboard</h2>
+
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card border-primary">
+                <div class="card-header bg-primary text-white">System Status</div>
+                <div class="card-body">
+                    <p>📡 Server: <span class="text-success">Online</span></p>
+                    <p>📂 Database: <span class="text-success">Connected</span></p>
+                    <p>👥 Users Registered: <strong>{{ user_count }}</strong></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card border-success">
+                <div class="card-header bg-success text-white">Quick Links</div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        <li class="list-group-item"><a href="/bank">Government Bank Portal</a></li>
+                        <li class="list-group-item"><a href="/employee">Employee Portal</a></li>
+                        {% if session.get('role') == 'admin' %}
+                            <li class="list-group-item"><a href="/admin">Admin Dashboard</a></li>
+                            <li class="list-group-item"><a href="/launchcodes">Launch Codes</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-warning">
+                <div class="card-header bg-warning text-dark">User Information</div>
+                <div class="card-body">
+                    <p>👤 Logged in as: <strong>{{ session.get('user_id') }}</strong></p>
+                    <p>🔑 Role: <strong>{{ session.get('role') }}</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

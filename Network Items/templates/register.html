@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Register - RCGP{% endblock %}
+
+{% block content %}
+    <h2>Register</h2>
+    <form method="POST" action="/register">
+        <input type="text" name="username" required placeholder="Username">
+        <input type="password" name="password" required placeholder="Password">
+        <input type="password" name="confirm_password" required placeholder="Confirm Password">
+        <button type="submit">Register</button>
+    </form>
+{% endblock %}

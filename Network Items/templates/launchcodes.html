@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Launch Codes - RCGP{% endblock %}
+
+{% block content %}
+    <h2>🔒 Secure Launch Codes</h2>
+    <p>This page is restricted to authorized personnel only.</p>
+    {% if session.get('role') == 'admin' %}
+        <p><strong>Authorized Access:</strong> Here are the secured launch codes.</p>
+        <button onclick="alert('Launch sequence initiated! Code: 73698563680876f6A87')"
+    {% else %}
+        <p>🚫 Access Denied.</p>
+    {% endif %}
+{% endblock %}
