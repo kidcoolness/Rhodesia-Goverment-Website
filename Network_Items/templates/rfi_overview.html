@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>RFI Dashboard</h2>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th><th>Requester</th><th>Priority</th><th>Status</th><th>Submitted</th>
+            {% if session.get('role') in ['admin', 'soc_admin'] or rfi.requester == session.get('username') %}<th>Actions</th>{% endif %}
+        </tr>
+    </thead>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Request for Information (RFI) Dashboard</h2>
+        <a href="{{ url_for('rfi.new_rfi') }}" class="btn btn-primary">New RFI</a>
+    </div>
+    <tbody>
+        {% for rfi in rfis %}
+            <tr id="rfi-{{ rfi.id }}" class="{% if rfi.status == 'Approved' %}table-success{% elif rfi.status == 'Denied' %}table-danger{% endif %}">
+                <td>{{ rfi.title }}</td>
+                <td>{{ rfi.requester }}</td>
+                <td>{{ rfi.priority }}</td>
+                <td class="status">{{ rfi.status }}</td>
+                <td>{{ rfi.timestamp.strftime('%Y-%m-%d %H:%M') }}</td>
+                {% if session.get('role') in ['admin', 'soc_admin'] or rfi.requester == session.get('username') %}
+                <td>
+                    {% if session.get('role') in ['admin', 'soc_admin'] %}
+                        <button onclick="updateRFIStatus({{ rfi.id }}, 'approve')" class="btn btn-success btn-sm">Approve</button>
+                        <button onclick="updateRFIStatus({{ rfi.id }}, 'deny')" class="btn btn-warning btn-sm">Reject</button>
+                    {% endif %}
+                    <button onclick="deleteRFI({{ rfi.id }})" class="btn btn-danger btn-sm">Delete</button>
+                </td>
+                {% endif %}
+            </tr>
+        {% endfor %}
+        </tbody>
+        
+        <script>
+        function updateRFIStatus(rfiId, action) {
+            fetch(`/rfi/${action}/${rfiId}`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const row = document.getElementById(`rfi-${rfiId}`);
+                        row.querySelector('.status').innerText = data.status;
+        
+                        row.classList.remove('table-success', 'table-danger');
+                        if (data.status === "Approved") row.classList.add('table-success');
+                        if (data.status === "Denied") row.classList.add('table-danger');
+                    } else {
+                        alert("Error: " + (data.error || "Unknown error"));
+                    }
+                });
+        }
+        
+        function deleteRFI(rfiId) {
+            if (!confirm("Are you sure you want to delete this RFI?")) return;
+        
+            fetch(`/rfi/delete/${rfiId}`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const row = document.getElementById(`rfi-${rfiId}`);
+                        if (row) row.remove();
+                    } else {
+                        alert("Error: " + (data.error || "Unknown error"));
+                    }
+                });
+        }
+        </script>
+{% endblock %}  

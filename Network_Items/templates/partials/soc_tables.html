@@ -1,0 +1,16 @@
+
+{% for section, entries in logs.items() %}
+<div class="card">
+    <div class="card-header"><h5>{{ section.replace('_', ' ').title() }}</h5></div>
+    <div class="card-body">
+        {% if entries %}
+        <table class="table table-dark table-striped">
+            <thead><tr>{% for k in entries[0].keys() %}<th>{{ k }}</th>{% endfor %}</tr></thead>
+            <tbody>{% for row in entries %}<tr>{% for val in row.values() %}<td>{{ val }}</td>{% endfor %}</tr>{% endfor %}</tbody>
+        </table>
+        {% else %}
+        <p>No entries.</p>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
